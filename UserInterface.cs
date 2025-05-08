@@ -51,6 +51,7 @@ internal class UserInterface()
         Console.Clear();
 
         string playMenuSelection = "";
+        string[] operations = ["+", "-", "*", "/", "R"];
 
         // Ask user which operation they want to use
         Console.WriteLine("Choose which operation you wish to play with");
@@ -58,6 +59,7 @@ internal class UserInterface()
         Console.WriteLine("2. Substraction");
         Console.WriteLine("3. Multiplication");
         Console.WriteLine("4. Division");
+        Console.WriteLine("5. Random using all operations");
         Console.WriteLine(".. Enter anything else to go back\n");
 
         // Checks if input is not null
@@ -67,23 +69,40 @@ internal class UserInterface()
             playMenuSelection = readResult.ToLower().Trim();
         }
 
-        // Starts the game with the correct operation
-        switch (playMenuSelection)
+        int.TryParse(playMenuSelection, out int operationIndex);
+
+        if (operationIndex >= 1 && operationIndex <= 5)
         {
-            case "1":
-                GameEngine.GameProcess("+");
-                break;
-            case "2":
-                GameEngine.GameProcess("-");
-                break;
-            case "3":
-                GameEngine.GameProcess("*");
-                break;
-            case "4":
-                GameEngine.GameProcess("/");
-                break;
-            default:
-                break;
+            operationIndex--;      // Adjust operation index to match math game logic
+            ChooseDifficulty(operationIndex);
+        }
+    }
+
+    internal void ChooseDifficulty(int operationIndex)
+    {
+        Console.Clear();
+        string difficultyMenuSelection = "";
+        // Ask user which difficulty they want to use
+        Console.WriteLine("Choose which difficulty you wish to play with");
+        Console.WriteLine("The higher the difficulty, the bigger the numbers used");
+        Console.WriteLine("1. Easy");
+        Console.WriteLine("2. Medium");
+        Console.WriteLine("3. Hard");
+        Console.WriteLine(".. Enter anything else to go back\n");
+        // Checks if input is not null
+        readResult = Console.ReadLine();
+        if (readResult != null)
+        {
+            difficultyMenuSelection = readResult.ToLower().Trim();
+        }
+
+        int.TryParse(difficultyMenuSelection, out int difficultyLevel);
+
+        // Starts the game with the correct operation and difficulty
+        if (difficultyLevel >= 1 && difficultyLevel <= 3)
+        {
+            difficultyLevel--;      // Adjust difficulty level to match math game logic
+            GameEngine.GameProcess(operationIndex, difficultyLevel);
         }
     }
 

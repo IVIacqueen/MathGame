@@ -3,11 +3,12 @@
 internal static class GameEngine
 {
     private static string? readResult;
+    private static string[] operations = ["+", "-", "*", "/", "R"];
 
     // Starting logic of the game
-    internal static void GameProcess(string operation)
+    internal static void GameProcess(int operationIndex, int difficulty)
     {
-        int numberOfProblems = 10;      // Number of problems given to the user change for testing
+        int numberOfProblems = 10;      // Number of problems given to the user, change for testing
         int currentScore = 0;
 
         Console.Clear();
@@ -15,7 +16,7 @@ internal static class GameEngine
         // Gives math problems and updates the score of the user
         for (int i = numberOfProblems; i > 0; i--)
         {
-            if (GiveProblem(operation))
+            if (GiveProblem(operationIndex, difficulty))
             {
                 currentScore++;
             }
@@ -23,7 +24,7 @@ internal static class GameEngine
         }
 
         // Adds final score to user's game history
-        AddToHistory(currentScore, numberOfProblems, operation);
+        AddToHistory(currentScore, numberOfProblems, operationIndex);
 
         // Display score to user
         Console.WriteLine($"You got {currentScore} out of {numberOfProblems}");
@@ -32,15 +33,30 @@ internal static class GameEngine
     }
 
     // Generate a math problem
-    internal static bool GiveProblem(string operation)
+    internal static bool GiveProblem(int operationIndex, int difficulty)
     {
+        const int BASE_NUM_GENERATOR = 10; // Base number for generating random numbers
+
         Random random = new Random();
+        string operation;
+
+        // Generate upper and lower bound for random numbers
+        int lowerBound = (int) Math.Pow(BASE_NUM_GENERATOR, difficulty);
+        int upperBound = (int) Math.Pow(BASE_NUM_GENERATOR, (difficulty + 1));
 
         // Generates random numbers for the math problem
-        int firstNumber = random.Next(0, 100);
-        int secondNumber = random.Next(0, 100);
+        int firstNumber = random.Next(lowerBound, upperBound);
+        int secondNumber = random.Next(lowerBound, upperBound);
         bool validInput = false;
         int answer;
+
+        // Randomly select an operation
+        if (operationIndex == 4)
+        {
+            operationIndex = random.Next(0, 4);
+        }
+
+        operation = operations[operationIndex];
 
         // For division problems, make sure the first number is divisible by the second number
         if (operation == "/")
@@ -51,7 +67,7 @@ internal static class GameEngine
         // Display math problem and get user input
         do
         { 
-            Console.WriteLine($"{firstNumber} {operation} {secondNumber} ?");
+            Console.WriteLine($"{firstNumber:N0} {operation} {secondNumber:N0} ?");
             readResult = Console.ReadLine();
 
             // Checks if user input is an integer
@@ -91,8 +107,8 @@ internal static class GameEngine
     }
 
     // Store score in the list of games user has played
-    internal static void AddToHistory(int finalScore, int numberOfProblems, string operation)
+    internal static void AddToHistory(int finalScore, int numberOfProblems, int operationIndex)
     {
-        ScoreHistory.CurrentScores.Add($"{operation} : {finalScore} out of {numberOfProblems}");
+        ScoreHistory.CurrentScores.Add($"{operations[operationIndex]} : {finalScore} out of {numberOfProblems}");
     }
 }
