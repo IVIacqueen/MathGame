@@ -2,6 +2,8 @@
 
 internal static class GameEngine
 {
+    private static DateTime start_time;
+
     private static string? readResult;
     private static string[] operations = ["+", "-", "*", "/", "R"];
 
@@ -11,11 +13,17 @@ internal static class GameEngine
         int numberOfProblems = 10;      // Number of problems given to the user, change for testing
         int currentScore = 0;
 
+        int time = 0;
+
         Console.Clear();
+
+        // Timer for the game
+        SetTimer();
 
         // Gives math problems and updates the score of the user
         for (int i = numberOfProblems; i > 0; i--)
         {
+            Console.WriteLine("Time: {0} seconds", Time_Elapsed()); // Update timer display
             if (GiveProblem(operationIndex, difficulty))
             {
                 currentScore++;
@@ -23,11 +31,14 @@ internal static class GameEngine
             Console.Clear();
         }
 
+        time = Time_Elapsed();  // Final time after completing all problems
+
         // Adds final score to user's game history
-        AddToHistory(currentScore, numberOfProblems, operationIndex);
+        AddToHistory(currentScore, numberOfProblems, operationIndex, difficulty, time);
 
         // Display score to user
         Console.WriteLine($"You got {currentScore} out of {numberOfProblems}");
+        Console.WriteLine($"You took {time} seconds");
         Console.WriteLine("Press enter to go back to the main menu");
         readResult = Console.ReadLine();
     }
@@ -38,7 +49,6 @@ internal static class GameEngine
         const int BASE_NUM_GENERATOR = 10; // Base number for generating random numbers
 
         Random random = new Random();
-        string operation;
 
         // Generate upper and lower bound for random numbers
         int lowerBound = (int) Math.Pow(BASE_NUM_GENERATOR, difficulty);
@@ -56,10 +66,8 @@ internal static class GameEngine
             operationIndex = random.Next(0, 4);
         }
 
-        operation = operations[operationIndex];
-
         // For division problems, make sure the first number is divisible by the second number
-        if (operation == "/")
+        if (operations[operationIndex] == "/")
         {
             firstNumber = firstNumber * secondNumber;
         }
@@ -67,7 +75,7 @@ internal static class GameEngine
         // Display math problem and get user input
         do
         { 
-            Console.WriteLine($"{firstNumber:N0} {operation} {secondNumber:N0} ?");
+            Console.WriteLine($"{firstNumber:N0} {operations[operationIndex]} {secondNumber:N0} ?");
             readResult = Console.ReadLine();
 
             // Checks if user input is an integer
@@ -79,7 +87,7 @@ internal static class GameEngine
             }
         } while (validInput == false);
 
-        return CheckAnswer(answer, firstNumber, secondNumber, operation);
+        return CheckAnswer(answer, firstNumber, secondNumber, operations[operationIndex]);
     }
 
     // Checks if the answer to a math problem is correct for add, sub, mult, div
@@ -107,8 +115,29 @@ internal static class GameEngine
     }
 
     // Store score in the list of games user has played
-    internal static void AddToHistory(int finalScore, int numberOfProblems, int operationIndex)
+    internal static void AddToHistory(int finalScore, int numberOfProblems, int operationIndex, int difficulty, int seconds)
     {
-        ScoreHistory.CurrentScores.Add($"{operations[operationIndex]} : {finalScore} out of {numberOfProblems}");
+        string difficultyLevel = difficulty switch
+        {
+            0 => "Easy",
+            1 => "Medium",
+            2 => "Hard",
+            _ => "Unknown"
+        };
+        ScoreHistory.CurrentScores.Add($"{operations[operationIndex]} : {finalScore} out of {numberOfProblems} | Time: {seconds} seconds | {difficultyLevel} mode");
+    }
+
+    // Sets current time
+    private static void SetTimer()
+    {
+        start_time = DateTime.Now;
+    }
+
+    // Timer for the game
+    private static int Time_Elapsed()
+    {
+        TimeSpan elapsed = DateTime.Now - start_time;
+
+        return elapsed.Seconds;
     }
 }

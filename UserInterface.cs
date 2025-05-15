@@ -51,7 +51,6 @@ internal class UserInterface()
         Console.Clear();
 
         string playMenuSelection = "";
-        string[] operations = ["+", "-", "*", "/", "R"];
 
         // Ask user which operation they want to use
         Console.WriteLine("Choose which operation you wish to play with");
@@ -130,16 +129,6 @@ internal class UserInterface()
         readResult = Console.ReadLine();
 
     }
-
-    /* Possibly add more details
-    // Displays the scores for all games user has played
-    internal void DisplayGameHistory()
-    {
-        foreach (string score in ScoreHistory.CurrentScores)
-        {
-            Console.WriteLine(score);
-        }
-    }*/
 
     // Displays message for when user exits the game
     internal void ExitGame()
